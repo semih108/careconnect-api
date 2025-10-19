@@ -14,7 +14,19 @@ const assignmentRoutes = require('./routes/assignmentRoutes');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim())
+    : ['http://localhost:3000'];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+    optionsSuccessStatus: 200
+}));
 
 // Routen-Mounting
 app.use('/auth', authRoutes);
@@ -41,12 +53,38 @@ if (isMock) {
         console.log(`🚀 CareConnect API läuft im MOCK-Modus auf http://localhost:${PORT}`);
     });
 } else {
-    sequelize.sync({ force: true }).then(() => {
-        console.log('✅ Datenbank synchronisiert');
-        app.listen(PORT, () => {
-            console.log(`🚀 CareConnect API läuft auf http://localhost:${PORT}`);
+    const NODE_ENV = process.env.NODE_ENV || 'development';
+    const DB_SYNC_FORCE = process.env.DB_SYNC_FORCE === 'true'; 
+
+    if (NODE_ENV === 'production') {
+        console.log('Production mode: DB-Sync übersprungen. Bitte Sequelize-Migrations verwenden.');
+        sequelize.authenticate()
+            .then(() => {
+                console.log('Datenbankverbindung hergestellt');
+                app.listen(PORT, () => {
+                    console.log(`CareConnect API läuft auf http://localhost:${PORT}`);
+                });
+            })
+            .catch((err) => {
+                console.error('Fehler bei DB-Verbindung:', err);
+                process.exit(1);
+            });
+    } else {
+        // Development/Testing: default { alter: true } zum synchronisieren ohne Datenverlust.
+        // DB_SYNC_FORCE=true kann temporär force:true aktivieren (vorsichtig einsetzen).
+        const syncOptions = DB_SYNC_FORCE ? { force: true } : { alter: true };
+        if (DB_SYNC_FORCE) {
+            console.warn('DB_SYNC_FORCE=true — sequelize.sync({ force: true }) wird ausgeführt (Datenverlust möglich).');
+        }
+
+        sequelize.sync(syncOptions).then(() => {
+            console.log('✅ Datenbank synchronisiert');
+            app.listen(PORT, () => {
+                console.log(`🚀 CareConnect API läuft auf http://localhost:${PORT}`);
+            });
+        }).catch((err) => {
+            console.error('❌ Fehler bei DB-Verbindung:', err);
+            process.exit(1);
         });
-    }).catch((err) => {
-        console.error('❌ Fehler bei DB-Verbindung:', err);
-    });
+    }
 }

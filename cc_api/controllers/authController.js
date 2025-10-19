@@ -4,22 +4,18 @@ const generateToken = require('../utils/token');
 const authenticate = require('../middleware/authenticate');
 
 exports.loginUser = async (req, res) => {
-    console.log('🚀 Login aufgerufen mit:', req.body);
-    const all = await User.findAll();
-    console.log('📋 Aktuelle mockUsers:', all);
-
     const { email, password } = req.body;
 
     try {
         const user = await User.findOne({ where: { email } });
 
         if (!user) {
-            return res.status(404).json({ error: 'Benutzer nicht gefunden' });
+            return res.status(404).json({ error: 'Ungültige Anmeldedaten' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({ error: 'Falsches Passwort' });
+            return res.status(401).json({ error: 'Ungültige Anmeldedaten' });
         }
 
         const token = generateToken(user);
@@ -42,7 +38,7 @@ exports.loginUser = async (req, res) => {
 };
 
 exports.registerUser = async (req, res) => {
-    const { name, email, password, phone, address, role } = req.body;
+    const { name, email, password, phone, address } = req.body;
 
     try {
         // Duplikatprüfung
@@ -54,6 +50,9 @@ exports.registerUser = async (req, res) => {
         // Passwort hashen
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Rolle wird serverseitig gesetzt — Registrierung kann keine Rolle zuweisen
+        const defaultRole = 'patient';
+
         // Benutzer erstellen
         const user = await User.create({
             name,
@@ -61,7 +60,7 @@ exports.registerUser = async (req, res) => {
             password: hashedPassword,
             phone,
             address,
-            role
+            role: defaultRole
         });
 
         // Token für automatisches Login nach Registrierung
