@@ -1,0 +1,119 @@
+@startuml
+
+entity "Angehöriger" {
+  +ID: Integer
+  +Name: String
+  +Kontaktinfo: String
+}
+
+entity "Pflegepersonal" {
+  +ID: Integer
+  +Name: String
+  +Qualifikation: String
+  +Arbeitszeit: String
+}
+
+entity "Pflegeheim" {
+  +ID: Integer
+  +Name: String
+  +Adresse: String
+}
+
+entity "Familienmitglied" {
+  +ID: Integer
+  +Name: String
+  +Geburtsdatum: Date
+}
+
+entity "Wohlergehen" {
+  +ID: Integer
+  +Status: String
+  +Datenpunkte: String
+}
+
+entity "Aktivitäten" {
+  +ID: Integer
+  +Beschreibung: String
+  +Uhrzeit: DateTime
+}
+
+entity "Benachrichtigungen" {
+  +ID: Integer
+  +Nachricht: String
+  +Zeitstempel: DateTime
+}
+
+entity "System" {
+  +ID: Integer
+  +Name: String
+}
+
+entity "Event" {
+  +ID: Integer
+  +Beschreibung: String
+  +Uhrzeit: DateTime
+}
+
+entity "ToDo" {
+  +ID: Integer
+  +Beschreibung: String
+  +Status: String
+}
+
+entity "Kalender" {
+  +ID: Integer
+  +Termin: DateTime
+  +Titel: String
+}
+
+entity "User" {
+  +ID: Integer
+  +Username: String
+  +Passwort: String
+  +Rolle: String
+}
+
+entity "Chat" {
+  +ID: Integer
+  +Nachricht: String
+  +Zeitstempel: DateTime
+  +Sender: String
+}
+
+entity "n8nWorkflow" {
+  +ID: Integer
+  +Name: String
+  +Status: String
+  +Auslöser: String
+}
+
+entity "n8nChatIntegration" {
+  +ID: Integer
+  +Chat-Nachricht: String
+  +Benachrichtigungstyp: String
+  +Status: String
+}
+
+' Beziehungen
+Angehöriger --|> Familienmitglied : hat
+Pflegepersonal --> Pflegeheim : arbeitet_in
+Pflegeheim --> Wohlergehen : überwacht
+Pflegeheim --> Aktivitäten : dokumentiert
+Pflegepersonal --> Aktivitäten : führt_durch
+Angehöriger --> Benachrichtigungen : erhält
+System --> Pflegeheim : verwaltet
+Angehöriger --> Event : registriert_für
+Pflegepersonal --> Event : plant
+Pflegepersonal --> ToDo : erstellt
+User --> System : interagiert_mit
+System --> Benachrichtigungen : sendet
+Angehöriger --> Kalender : erhält_Termine
+Pflegepersonal --> Kalender : plant_Termine
+User --> Event : erstellt
+Angehöriger --> Chat : sendet_Nachricht
+Pflegepersonal --> Chat : sendet_Nachricht
+Chat --> n8nChatIntegration : verwendet
+n8nChatIntegration --> n8nWorkflow : löst_aus
+System --> n8nWorkflow : startet_Workflow
+
+@enduml

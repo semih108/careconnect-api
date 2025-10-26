@@ -1,0 +1,11 @@
+exports.getMyProfile = (req, res) => res.send('Eigenes Profil anzeigen');
+exports.updateMyProfile = (req, res) => res.send('Profil aktualisieren');
+exports.getUserById = (req, res) => res.send('User abrufen');
+exports.updateUserById = (req, res) => res.send('User aktualisieren');
+exports.deleteUserById = (req, res) => res.send('User löschen');
+exports.getAllUsers = (req, res) => res.send('Alle User anzeigen');
+exports.getUsersByRole = (req, res) => res.send('User nach Rolle');
+exports.getMyMedications = (req, res) => res.send('Eigene Medikamente');
+exports.getMyAppointments = (req, res) => res.send('Eigene Termine');
+exports.getPatientsOfCaregiver = (req, res) => res.send('Patienten dieses Pflegers');
+exports.getRelativesOfPatient = (req, res) => res.send('Angehörige dieses Patienten');
