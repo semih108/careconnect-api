@@ -6,7 +6,7 @@ const { mockUsers } = require(path.resolve(__dirname, '../mockDB'));
 if (useMock) {
     console.log('⚠️ MOCK-MODUS AKTIV');
 
-    const { mockUsers } = require('../mockDB'); // << zentrale User-Liste
+    const { mockUsers } = require('../mockDB');
 
     const User = {
         async create(data) {
@@ -24,25 +24,31 @@ if (useMock) {
 
     const Appointment = {
         async create(data) {
-            console.log('📝 Termin erstellt:', data);
+            console.log('📝 Termin erstellt:');
         }
     };
 
     const Medication = {
         async create(data) {
-            console.log('💊 Medikament erstellt:', data);
+            console.log('💊 Medikament erstellt:');
         }
     };
 
     const Notification = {
         async create(data) {
-            console.log('🔔 Benachrichtigung erstellt:', data);
+            console.log('🔔 Benachrichtigung erstellt');
         }
     };
 
     const Assignment = {
         async create(data) {
-            console.log('👥 Zuweisung erstellt:', data);
+            console.log('👥 Zuweisung erstellt');
+        }
+    };
+
+    const Relationship = {
+        async create(data) {
+            console.log('👨‍👩‍👦 Beziehung erstellt:');
         }
     };
 
@@ -54,7 +60,8 @@ if (useMock) {
         Appointment,
         Medication,
         Notification,
-        Assignment
+        Assignment,
+        Relationship
     };
 
 } else {
@@ -67,14 +74,24 @@ if (useMock) {
     const Medication = require('./Medication')(sequelize, Sequelize.DataTypes);
     const Notification = require('./Notification')(sequelize, Sequelize.DataTypes);
     const Assignment = require('./Assignment')(sequelize, Sequelize.DataTypes);
+    const Relationship = require('./Relationship')(sequelize, Sequelize.DataTypes);
 
     User.hasMany(Appointment, { foreignKey: 'patient_id' });
     User.hasMany(Appointment, { foreignKey: 'caregiver_id' });
     User.hasMany(Medication, { foreignKey: 'patient_id' });
     User.hasMany(Notification, { foreignKey: 'user_id' });
+    User.hasMany(Notification, { foreignKey: 'patient_id' });
+
+    Appointment.belongsTo(User, { as: 'patient', foreignKey: 'patient_id' });
+    Appointment.belongsTo(User, { as: 'caregiver', foreignKey: 'caregiver_id' });
+
+    Notification.belongsTo(User, { as: 'patient', foreignKey: 'patient_id' });
 
     Assignment.belongsTo(User, { as: 'caregiver', foreignKey: 'caregiver_id' });
     Assignment.belongsTo(User, { as: 'patient', foreignKey: 'patient_id' });
+
+    Relationship.belongsTo(User, { as: 'relative', foreignKey: 'relative_id' });
+    Relationship.belongsTo(User, { as: 'patient', foreignKey: 'patient_id' });
 
     module.exports = {
         sequelize,
@@ -82,6 +99,7 @@ if (useMock) {
         Appointment,
         Medication,
         Notification,
-        Assignment
+        Assignment,
+        Relationship
     };
 }

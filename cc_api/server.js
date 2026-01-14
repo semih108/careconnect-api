@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-dotenv.config(); // ⚠️ Muss ganz oben stehen!
+dotenv.config(); // ⚠️ Must be at the top!
 
 const { sequelize } = require('./models');
 
@@ -41,7 +41,7 @@ const PORT = process.env.PORT || 3000;
 const isMock = process.env.USE_MOCK === 'true';
 
 if (isMock) {
-    console.log('🚫 MOCK-MODUS AKTIV – keine echte DB-Verbindung');
+    console.log('🚫 MOCK MODE ACTIVE – no real DB connection');
 
     const mockData = require('./mockData');
     global.mockMedications = mockData.mockMedications;

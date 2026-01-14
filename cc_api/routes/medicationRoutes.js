@@ -8,8 +8,8 @@ const {
 
 const router = express.Router();
 
-router.get('/', authenticate, authorize(['admin']), getAllMedications);
-router.get('/:id', authenticate, authorize(['caregiver', 'admin']), getMedicationById);
+router.get('/', authenticate, getAllMedications);
+router.get('/:id', authenticate, getMedicationById);
 router.post('/', authenticate, authorize(['caregiver', 'admin']), addMedication);
 router.put('/:id', authenticate, authorize(['caregiver', 'admin']), updateMedication);
 router.delete('/:id', authenticate, authorize(['admin']), deleteMedication);

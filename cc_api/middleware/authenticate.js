@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-// Simple In-Memory-Blacklist für abgemeldete Tokens
+// Simple in-memory blacklist for logged out tokens
 const tokenBlacklist = new Set();
 
 const authenticate = function(req, res, next) {
@@ -13,7 +13,7 @@ const authenticate = function(req, res, next) {
     try {
         const token = authHeader.split(' ')[1];
 
-        // Prüfen, ob Token in der Blacklist ist
+        // Check if token is in the blacklist
         if (tokenBlacklist.has(token)) {
             return res.status(401).json({ error: 'Token wurde abgemeldet' });
         }
@@ -27,7 +27,7 @@ const authenticate = function(req, res, next) {
     }
 };
 
-// Funktion zum Hinzufügen eines Tokens zur Blacklist (für Logout-Funktionalität)
+// Function to add a token to the blacklist (for logout functionality)
 authenticate.revokeToken = function(token) {
     tokenBlacklist.add(token);
 };

@@ -41,7 +41,7 @@ exports.registerUser = async (req, res) => {
     const { name, email, password, phone, address } = req.body;
 
     try {
-        // Duplikatprüfung
+        // Check for duplicates
         const existing = await User.findOne({ where: { email } });
         if (existing) {
             return res.status(409).json({ error: 'E-Mail bereits vergeben' });
@@ -63,10 +63,10 @@ exports.registerUser = async (req, res) => {
             role: defaultRole
         });
 
-        // Token für automatisches Login nach Registrierung
+        // Token for automatic login after registration
         const token = generateToken(user);
 
-        // Erfolgsmeldung zurückgeben
+        // Return success message
         res.status(201).json({
             message: 'Benutzer erfolgreich registriert',
             token,
@@ -85,7 +85,7 @@ exports.registerUser = async (req, res) => {
 };
 
 exports.logoutUser = (req, res) => {
-    // Token zur Blacklist hinzufügen
+    // Add token to blacklist
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.split(' ')[1];
